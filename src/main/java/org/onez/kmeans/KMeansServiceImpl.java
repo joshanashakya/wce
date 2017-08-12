@@ -16,7 +16,7 @@ import java.util.*;
  */
 public class KMeansServiceImpl implements KMeansService {
 
-    public ClusterContextImpl initialize(String source) {
+    public ClusterContext initialize(String source) {
         ClusterContextImpl context;
         try {
             // read data
@@ -57,7 +57,7 @@ public class KMeansServiceImpl implements KMeansService {
         return context;
     }
 
-    public List<Cluster> cluster(ClusterContextImpl context) {
+    public List<Cluster> cluster(ClusterContext context) {
         Map<String, Iris> centroidByClusterName = new HashMap<> ();
         Map<String, Cluster> clusterByName = new HashMap<> ();
 
