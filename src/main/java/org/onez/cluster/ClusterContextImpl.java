@@ -20,26 +20,32 @@ public class ClusterContextImpl implements ClusterContext {
         this.irisList = irisList;
     }
 
+    @Override
     public int getNumberOfCluster() {
-        return numberOfCluster;
+        return this.numberOfCluster;
     }
 
-    public void setNumberOfCluster(int numberOfCluster) {
-        this.numberOfCluster = numberOfCluster;
-    }
-
+    @Override
     public List<Iris> getIrisList() {
-        return irisList;
+        return this.irisList;
     }
 
-    public void setIrisList(List<Iris> irisList) {
-        this.irisList = irisList;
-    }
-
+    @Override
     public List<Cluster> getClusters() {
         return this.clusters;
     }
 
+    @Override
+    public void setNumberOfCluster(int numberOfCluster) {
+        this.numberOfCluster = numberOfCluster;
+    }
+
+    @Override
+    public void setIrisList(List<Iris> irisList) {
+        this.irisList = irisList;
+    }
+
+    @Override
     public void setClusters(List<Cluster> clusters) {
         this.clusters = clusters;
     }

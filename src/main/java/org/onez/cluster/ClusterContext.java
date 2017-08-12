@@ -14,4 +14,10 @@ public interface ClusterContext {
     List<Iris> getIrisList();
 
     List<Cluster> getClusters();
+
+    void setNumberOfCluster(int numberOfCluster);
+
+    void setIrisList(List<Iris> irisList);
+
+    void setClusters(List<Cluster> clusters);
 }

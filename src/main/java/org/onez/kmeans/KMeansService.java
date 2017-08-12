@@ -17,14 +17,14 @@ public interface KMeansService {
      * @param source of data
      * @return ClusterContext
      */
-    ClusterContextImpl initialize(String source);
+    ClusterContext initialize(String source);
 
     /**
      * Creates cluster by recursively grouping data based on mean calculation (phase II).
      *
      * @return ClusterContext
      */
-    List<Cluster> cluster(ClusterContextImpl context);
+    List<Cluster> cluster(ClusterContext context);
 
     /**
      * Prints the cluster of data.
