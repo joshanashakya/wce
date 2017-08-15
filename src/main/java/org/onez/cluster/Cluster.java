@@ -3,7 +3,6 @@ package org.onez.cluster;
 import org.onez.iris.Iris;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,5 +49,20 @@ public class Cluster {
 
     public void setCentroid(Iris centroid) {
         this.centroid = centroid;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder ("Cluster Name : ");
+        sb.append (this.name);
+        sb.append ("\n");
+        sb.append ("Cluster Size : ");
+        sb.append (this.irisList.size ());
+        sb.append ("\n");
+        for (Iris iris : this.irisList) {
+            sb.append (String.format ("[%d : %.1f, %.1f, %.1f, %.1f]\n", iris.getId (), iris.getSepalLen (), iris.getSepalWid (), iris.getPetalLen (), iris.getPetalWid ()));
+        }
+        sb.append ("\n");
+        return sb.toString ();
     }
 }

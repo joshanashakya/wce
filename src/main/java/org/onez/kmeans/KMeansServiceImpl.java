@@ -17,7 +17,7 @@ import java.util.*;
 public class KMeansServiceImpl implements KMeansService {
 
     public ClusterContext initialize(String source) {
-        ClusterContextImpl context;
+        ClusterContext context;
         try {
             // read data
             String[] data = DataHandler.loadData (source).split ("::");
@@ -26,7 +26,7 @@ public class KMeansServiceImpl implements KMeansService {
             List<Iris> irisList = new ArrayList<> ();
             for (int i = 1; i < data.length; i++) {
                 String[] values = data[i].split (",");
-                irisList.add (new Iris (Double.parseDouble (values[0]), Double.parseDouble (values[1]), Double.parseDouble (values[2]), Double.parseDouble (values[3])));
+                irisList.add (new Iris (i, Double.parseDouble (values[0]), Double.parseDouble (values[1]), Double.parseDouble (values[2]), Double.parseDouble (values[3])));
             }
 
             System.out.println ("Number of clusters : " + numOfCluster);
@@ -34,62 +34,73 @@ public class KMeansServiceImpl implements KMeansService {
 
             // initialize cluster context
             context = new ClusterContextImpl (numOfCluster, irisList);
-
-            Map<String, Cluster> clusterByName = new HashMap<> (numOfCluster);
-            for (int i = 0; i < numOfCluster; i++) {
-                int random = new Random ().nextInt (context.getIrisList ().size ());
-                String clusterName = String.format ("Cluster(%s)", i + 1);
-                clusterByName.put (clusterName, new Cluster (clusterName, irisList.get (random)));
-            }
-
-            // distribute data among clusters
-            for (Iris iris : irisList) {
-                Cluster cluster = nearestCluster (new ArrayList<> (clusterByName.values ()), iris);
-                cluster.getIrisList ().add (iris);
-                clusterByName.put (cluster.getName (), cluster);
-            }
+            Map<String, Cluster> clusterByName = generateRandomCentroid (context, numOfCluster, irisList);
             context.setClusters (new ArrayList<> (clusterByName.values ()));
+
             return context;
         } catch (Exception ex) {
-            context = new ClusterContextImpl (0, Collections.EMPTY_LIST);
+            context = new ClusterContextImpl (0, Collections.<Iris>emptyList ());
             ex.printStackTrace ();
         }
         return context;
     }
 
     public List<Cluster> cluster(ClusterContext context) {
-        Map<String, Iris> centroidByClusterName = new HashMap<> ();
-        Map<String, Cluster> clusterByName = new HashMap<> ();
+        List<Iris> irisList = context.getIrisList ();
+        boolean endIteration = false;
 
         while (true) {
-            boolean end = true;
-            List<Cluster> clusters = context.getClusters ();
+            // get previous centroid
+            Map<String, Iris> centroidByClusterName = getCentroids (context.getClusters ());
+
+            // assign data to cluster
+            List<Cluster> clusters = generateClusters (context.getClusters (), irisList);
+
+            // check if centroids are equal
             for (Cluster cluster : clusters) {
-                centroidByClusterName.put (cluster.getName (), cluster.getCentroid ());
-                Iris centroid = calculateCentroid (cluster);
-                if (centroid.equals (centroidByClusterName.get (cluster.getName ()))) {
-                    end = false;
-                    centroidByClusterName.put (cluster.getName (), centroid);
+                if (cluster.getCentroid ().equals (centroidByClusterName.get (cluster.getName ()))) {
+                    endIteration = true;
+                    continue;
                 }
+                endIteration = false;
             }
 
-            if (end) {
+            // set newly calculated cluster in context
+            context.setClusters (clusters);
+            if (endIteration) {
                 break;
             }
-
-            List<Iris> irisList = context.getIrisList ();
-            for (Iris iris : irisList) {
-                Cluster cluster = nearestCluster (clusters, iris);
-                cluster.getIrisList ().add (iris);
-                clusterByName.put (cluster.getName (), cluster);
-            }
-            context.setClusters (new ArrayList<> (clusterByName.values ()));
         }
         return context.getClusters ();
     }
 
+    private List<Cluster> generateClusters(List<Cluster> clusters, List<Iris> irisList) {
+        // clean cluster
+        for (Cluster cluster : clusters) {
+            cluster.setIrisList (new ArrayList<Iris> ());
+        }
+
+        Map<String, Cluster> clusterByName = new HashMap<> ();
+        for (Iris iris : irisList) {
+            // find nearest cluster
+            Cluster cluster = nearestCluster (clusters, iris);
+            // add data to nearest cluster
+            cluster.getIrisList ().add (iris);
+            clusterByName.put (cluster.getName (), cluster);
+        }
+        // calculate centroid of new cluster
+        for (Map.Entry<String, Cluster> entry : clusterByName.entrySet ()) {
+            Cluster newCluster = entry.getValue ();
+            Iris centroid = calculateCentroid (newCluster);
+            newCluster.setCentroid (centroid);
+            clusterByName.put (newCluster.getName (), newCluster);
+        }
+        return new ArrayList<> (clusterByName.values ());
+    }
+
     public boolean print(Cluster cluster) {
-        return false;
+        System.out.println (cluster.toString ());
+        return true;
     }
 
     Iris calculateCentroid(Cluster cluster) {
@@ -134,5 +145,23 @@ public class KMeansServiceImpl implements KMeansService {
      */
     double calculateEuclideanDistance(Iris iris, Iris centroid) {
         return Math.pow (Math.pow (iris.getPetalLen () - centroid.getPetalLen (), 2) + Math.pow (iris.getPetalWid () - centroid.getPetalWid (), 2) + Math.pow (iris.getSepalLen () - centroid.getSepalLen (), 2) + Math.pow (iris.getSepalWid () - centroid.getSepalWid (), 2), 0.5);
+    }
+
+    private Map<String, Cluster> generateRandomCentroid(ClusterContext context, int numOfCluster, List<Iris> irisList) {
+        Map<String, Cluster> clusterByName = new HashMap<> (numOfCluster);
+        for (int i = 0; i < numOfCluster; i++) {
+            int random = new Random ().nextInt (context.getIrisList ().size ());
+            String clusterName = String.format ("Cluster(%s)", i + 1);
+            clusterByName.put (clusterName, new Cluster (clusterName, irisList.get (random)));
+        }
+        return clusterByName;
+    }
+
+    private Map<String, Iris> getCentroids(List<Cluster> clusters) {
+        Map<String, Iris> centroidByClusterName = new HashMap<> ();
+        for (Cluster cluster : clusters) {
+            centroidByClusterName.put (cluster.getName (), cluster.getCentroid ());
+        }
+        return centroidByClusterName;
     }
 }

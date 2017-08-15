@@ -18,9 +18,9 @@ public class App {
     public static void main(String[] args) {
         KMeansService service = new KMeansServiceImpl ();
         ClusterContext context = service.initialize ("iris.data");
-        List<Cluster> clusterList = service.cluster (context);
-        for (Cluster cluster : clusterList) {
-            System.out.println (cluster.getIrisList ());
+        List<Cluster> clusters = service.cluster (context);
+        for (Cluster cluster : clusters) {
+            service.print (cluster);
         }
     }
 }

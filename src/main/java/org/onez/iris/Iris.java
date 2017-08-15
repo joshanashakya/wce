@@ -28,6 +28,14 @@ public class Iris {
         this.petalWid = petalWid;
     }
 
+    public Iris(int id, double sepalLen, double sepalWid, double petalLen, double petalWid) {
+        this.id = id;
+        this.sepalLen = sepalLen;
+        this.sepalWid = sepalWid;
+        this.petalLen = petalLen;
+        this.petalWid = petalWid;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
