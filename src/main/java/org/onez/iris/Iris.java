@@ -48,7 +48,7 @@ public class Iris {
 
         Iris iris = (Iris) obj;
 
-        return iris.getId () == id && iris.getSepalLen () == sepalLen && iris.getSepalWid () == sepalWid && iris.getPetalLen () == petalLen && iris.getPetalWid () == petalWid;
+        return iris.getSepalLen () == sepalLen && iris.getSepalWid () == sepalWid && iris.getPetalLen () == petalLen && iris.getPetalWid () == petalWid;
     }
 
     @Override

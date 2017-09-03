@@ -35,6 +35,10 @@ public class KMeansServiceImpl implements KMeansService {
             // initialize cluster context
             context = new ClusterContextImpl (numOfCluster, irisList);
             Map<String, Cluster> clusterByName = generateRandomCentroid (context, numOfCluster, irisList);
+            System.out.println ("\nInitialization phase : ");
+            for (Map.Entry<String, Cluster> entry : clusterByName.entrySet ()) {
+                System.out.println (entry.getValue ().toString ());
+            }
             context.setClusters (new ArrayList<> (clusterByName.values ()));
 
             return context;
@@ -48,7 +52,7 @@ public class KMeansServiceImpl implements KMeansService {
     public List<Cluster> cluster(ClusterContext context) {
         List<Iris> irisList = context.getIrisList ();
         boolean endIteration = false;
-
+        int i = 1;
         while (true) {
             // get previous centroid
             Map<String, Iris> centroidByClusterName = getCentroids (context.getClusters ());
@@ -57,7 +61,9 @@ public class KMeansServiceImpl implements KMeansService {
             List<Cluster> clusters = generateClusters (context.getClusters (), irisList);
 
             // check if centroids are equal
+            System.out.println ("Iteration " + i);
             for (Cluster cluster : clusters) {
+                System.out.println (cluster.toString ());
                 if (cluster.getCentroid ().equals (centroidByClusterName.get (cluster.getName ()))) {
                     endIteration = true;
                     continue;
@@ -70,6 +76,7 @@ public class KMeansServiceImpl implements KMeansService {
             if (endIteration) {
                 break;
             }
+            i++;
         }
         return context.getClusters ();
     }

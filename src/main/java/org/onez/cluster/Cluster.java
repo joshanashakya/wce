@@ -59,6 +59,8 @@ public class Cluster {
         sb.append ("Cluster Size : ");
         sb.append (this.irisList.size ());
         sb.append ("\n");
+        sb.append (String.format ("Cluster Centroid : [%.1f, %.1f, %.1f, %.1f]", this.centroid.getSepalLen (), this.centroid.getSepalWid (), this.centroid.getPetalLen (), this.centroid.getPetalWid ()));
+        sb.append ("\n");
         for (Iris iris : this.irisList) {
             sb.append (String.format ("[%d : %.1f, %.1f, %.1f, %.1f]\n", iris.getId (), iris.getSepalLen (), iris.getSepalWid (), iris.getPetalLen (), iris.getPetalWid ()));
         }
